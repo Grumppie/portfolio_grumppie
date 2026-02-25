@@ -88,7 +88,7 @@ export function IntroSequence({ shadersReady, onComplete }: { shadersReady: bool
 
             {/* Typography */}
             <motion.div
-                className="absolute z-50 flex flex-col items-center justify-center mix-blend-difference text-white"
+                className="absolute inset-0 z-50 flex flex-col items-center justify-center mix-blend-difference text-white"
                 animate={{
                     opacity: isBursting ? 0 : 1,
                     scale: isBursting ? 1.15 : 1,
@@ -98,12 +98,12 @@ export function IntroSequence({ shadersReady, onComplete }: { shadersReady: bool
                 transition={{ duration: isBursting ? 0.15 : 0.3 }}
             >
                 <div
-                    className="text-3xl md:text-4xl font-semibold tracking-[0.3em] uppercase mb-3"
+                    className="text-xl sm:text-3xl md:text-4xl font-semibold tracking-[0.15em] sm:tracking-[0.3em] uppercase mb-3 text-center px-4"
                     style={{ fontFamily: "'Outfit', sans-serif" }}
                 >
                     {phase === "loading" ? "CALIBRATING" : "LET THERE BE LIGHT"}
                 </div>
-                <div className="text-xs md:text-sm font-mono tracking-[0.3em] uppercase opacity-50">
+                <div className="text-[10px] sm:text-xs md:text-sm font-mono tracking-[0.15em] sm:tracking-[0.3em] uppercase opacity-50 text-center px-4">
                     {phase === "loading" ? "RENDERING LIGHT SOURCES" : "INITIALIZING"}
                 </div>
 

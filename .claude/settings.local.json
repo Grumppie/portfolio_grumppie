@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(head:*)",
+      "WebFetch(domain:app.youform.com)",
+      "WebSearch",
+      "Bash(cd /c/Users/dell/Desktop/projects/Portfolio && npx tsc --noEmit 2>&1)"
+    ]
+  }
+}

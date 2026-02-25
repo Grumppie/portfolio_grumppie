@@ -19,8 +19,14 @@ export default function App() {
   const [introComplete, setIntroComplete] = useState(false)
   const [shadersReady, setShadersReady] = useState(false)
   const [glowColor, setGlowColor] = useState<string[] | null>(null)
+  const [lastGlow, setLastGlow] = useState<string[] | null>(null)
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
   const glowRef = useRef<HTMLDivElement>(null)
+
+  // Keep last glow color so the fade-out uses the real gradient instead of 'none'
+  useEffect(() => {
+    if (glowColor) setLastGlow(glowColor)
+  }, [glowColor])
 
   // Force scroll to top on mount
   useEffect(() => {
@@ -58,8 +64,9 @@ export default function App() {
     }).join(', ')
   }
 
+
   return (
-    <main className="min-h-screen text-white antialiased selection:bg-white/20 overflow-x-hidden w-full relative">
+    <main className="min-h-screen text-white antialiased selection:bg-white/20 w-full relative overflow-clip">
       {!introComplete && (
         <IntroSequence
           shadersReady={shadersReady}
@@ -76,8 +83,8 @@ export default function App() {
         className="fixed inset-0 z-[5] pointer-events-none"
         style={{
           opacity: glowColor ? 1 : 0,
-          background: glowColor ? buildGlow(glowColor) : 'none',
-          transition: 'opacity 0.7s ease-out',
+          background: buildGlow(glowColor ?? lastGlow ?? []),
+          transition: 'opacity 1s ease-in-out, background 1.2s ease-in-out',
         }}
       />
 
@@ -87,7 +94,7 @@ export default function App() {
       <Testimonials />
       <Contact />
 
-      <footer className="h-64 flex items-center justify-center bg-black border-t border-white/10 mt-12">
+      <footer className="h-32 pb-16 sm:pb-0 flex items-center justify-center bg-black border-t border-white/10">
         <p className="text-zinc-500 font-mono text-sm">SIGNAL ACTIVE // 2026</p>
       </footer>
     </main>

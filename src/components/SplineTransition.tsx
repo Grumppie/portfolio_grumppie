@@ -53,7 +53,8 @@ export function SplineTransition() {
     return (
         <motion.section
             ref={sectionRef}
-            className="relative w-full h-[150vh] flex items-center justify-center bg-black overflow-hidden warp-bottom"
+
+            className="relative w-full h-[100vh] md:h-[120vh] flex items-center justify-center bg-black overflow-hidden warp-bottom"
             style={{ scaleX, filter }}
         >
             <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none opacity-80" />
@@ -82,7 +83,7 @@ export function SplineTransition() {
 
             {/* Typography Overlay */}
             <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 pointer-events-none mt-[-5vh]">
-                <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] max-w-5xl leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] max-w-5xl leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
                     Precision Is the Practice
                 </h2>
                 <p className="mt-8 text-base md:text-lg text-zinc-300 font-normal tracking-[0.05em] max-w-3xl leading-relaxed" style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>

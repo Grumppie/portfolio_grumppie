@@ -52,12 +52,17 @@
     border-color: hsl(var(--border));
   }
 
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     background-color: #000000;
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
     background-image:
       repeating-linear-gradient(0deg,
         transparent,
@@ -87,4 +92,9 @@
   .warp-bottom {
     clip-path: ellipse(150% 100% at 50% 100%);
   }
+}
+
+/* Hide Spline watermark */
+a[href*="spline.design"] {
+  display: none !important;
 }

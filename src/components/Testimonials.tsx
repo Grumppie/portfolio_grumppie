@@ -29,10 +29,10 @@ export function Testimonials() {
     }, [x, y]);
 
     return (
-        <section id="testimonials" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden warp-bottom py-32">
+        <section id="testimonials" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden warp-bottom py-20">
             {/* Absolute Spline 3D Background */}
             <motion.div
-                className="absolute inset-0 z-0 opacity-60 mix-blend-screen"
+                className="absolute inset-0 z-0 opacity-60 mix-blend-screen pointer-events-none"
                 style={{
                     rotateX,
                     rotateY,
@@ -42,13 +42,14 @@ export function Testimonials() {
                 }}
                 ref={(node: HTMLDivElement | null) => {
                     if (node) {
-                        // Prevent scroll-zooming on the 3D model
                         node.addEventListener('wheel', (e: any) => e.stopPropagation(), { capture: true, passive: true });
                     }
                 }}
             >
-                <div className="w-full h-full pointer-events-auto" style={{ pointerEvents: 'auto' }}>
-                    <SplineScene scene="https://prod.spline.design/2CXHPy3TTVAf-20n/scene.splinecode" />
+                <div className="w-full h-full flex items-center justify-center overflow-hidden">
+                    <div className="w-[100%] h-[90%] md:w-full md:h-full pointer-events-none">
+                        <SplineScene scene="https://prod.spline.design/2CXHPy3TTVAf-20n/scene.splinecode" />
+                    </div>
                 </div>
             </motion.div>
 
@@ -56,10 +57,10 @@ export function Testimonials() {
             <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black via-transparent to-black pointer-events-none" />
 
             <div className="relative z-10 w-full max-w-7xl px-4 flex flex-col items-center">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 text-center" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 text-center" style={{ fontFamily: "'Outfit', sans-serif" }}>
                     Signal Over Noise
                 </h2>
-                <p className="text-zinc-400 max-w-3xl text-center mb-16 tracking-wide text-base md:text-lg leading-relaxed">
+                <p className="text-zinc-400 max-w-3xl text-center mb-10 tracking-wide text-base md:text-lg leading-relaxed">
                     The proof isn't in the pitch — it's in the people who come back. Founders, teams, and stakeholders who've seen what relentless delivery actually looks like.
                 </p>
 

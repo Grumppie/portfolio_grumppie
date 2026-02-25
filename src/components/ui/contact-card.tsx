@@ -40,7 +40,17 @@ export function ContactCard({
             <PlusIcon className="absolute -top-3 -right-3 h-6 w-6 text-white/20" />
             <PlusIcon className="absolute -bottom-3 -left-3 h-6 w-6 text-white/20" />
             <PlusIcon className="absolute -right-3 -bottom-3 h-6 w-6 text-white/20" />
-            <div className="flex flex-col justify-center lg:col-span-3 relative z-10 w-full">
+            {/* Form section — shows first on mobile, second on desktop */}
+            <div
+                className={cn(
+                    'bg-black/20 flex h-full w-full items-center border-b lg:border-b-0 border-white/10 p-6 lg:col-span-2 lg:border-l lg:order-2 relative z-10',
+                    formSectionClassName,
+                )}
+            >
+                {children}
+            </div>
+            {/* Info + social links — shows second on mobile, first on desktop */}
+            <div className="flex flex-col justify-center lg:col-span-3 lg:order-1 relative z-10 w-full">
                 <div className="relative h-full space-y-4 px-6 py-8 md:p-12">
                     <h1 className="text-3xl font-bold md:text-4xl lg:text-5xl text-white tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         {title}
@@ -48,7 +58,7 @@ export function ContactCard({
                     <p className="text-zinc-400 max-w-xl text-sm md:text-base lg:text-lg font-light leading-relaxed">
                         {description}
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-12 w-full max-w-lg">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-8 sm:mt-12 w-full max-w-lg">
                         {socialLinks?.map((link, index) => {
                             const Icon = link.icon;
                             return (
@@ -66,15 +76,6 @@ export function ContactCard({
                         })}
                     </div>
                 </div>
-            </div>
-            <div
-                className={cn(
-                    'bg-black/20 flex h-full w-full items-center border-t border-white/10 p-6 lg:col-span-2 md:border-t-0 md:border-l relative z-10',
-
-                    formSectionClassName,
-                )}
-            >
-                {children}
             </div>
         </div >
     );

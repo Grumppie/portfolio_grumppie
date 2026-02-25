@@ -94,7 +94,7 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
         <section id="hero" ref={sectionRef} className="relative w-full h-[100dvh] flex items-center justify-center overflow-hidden warp-bottom">
 
             {/* Single fluid shader background */}
-            <div className={`absolute inset-0 z-0 mix-blend-screen overflow-hidden transition-opacity duration-[1500ms] ease-out ${showShader ? 'opacity-50' : 'opacity-0'}`}>
+            <div className={`absolute inset-0 z-0 mix-blend-screen overflow-hidden transition-opacity duration-[1500ms] ease-out ${showShader ? 'opacity-70' : 'opacity-0'}`}>
                 <WebGLShader onReady={onShaderReady} />
             </div>
 
@@ -115,7 +115,7 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
                     <div className="relative group/title" style={{ transform: "translateZ(50px)" }}>
                         <motion.h1
                             variants={titleVariants}
-                            className="text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tight text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-500 group-hover/title:text-transparent group-hover/title:drop-shadow-[0_0_60px_rgba(255,255,255,0.8)] group-hover/title:scale-105"
+                            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tight text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-all duration-500 group-hover/title:text-transparent group-hover/title:drop-shadow-[0_0_60px_rgba(255,255,255,0.8)] group-hover/title:scale-105"
                             style={{ fontFamily: "'Outfit', sans-serif", WebkitTextStroke: "1px rgba(255,255,255,0.7)" }}
                         >
                             Sarthak Pawar
@@ -126,7 +126,7 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
                     <div style={{ transform: "translateZ(30px)" }}>
                         <motion.p
                             variants={taglineVariants}
-                            className="mt-6 text-lg md:text-xl text-zinc-300 font-light tracking-[0.25em] uppercase transition-all duration-500 group-hover:text-white group-hover:tracking-[0.35em] group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                            className="mt-4 sm:mt-6 text-sm sm:text-lg md:text-xl text-zinc-300 font-light tracking-[0.15em] sm:tracking-[0.25em] uppercase transition-all duration-500 group-hover:text-white group-hover:tracking-[0.35em] group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
                         >
                             I don't ship promises. I ship products.
                         </motion.p>

@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const testimonials = [
@@ -69,10 +69,13 @@ const slideVariants = {
     }),
 };
 
+const SWIPE_THRESHOLD = 50;
+
 export const StaggerTestimonials: React.FC = () => {
     const [current, setCurrent] = useState(0);
     const [direction, setDirection] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
+    const isDragging = useRef(false);
 
     const paginate = useCallback((newDirection: number) => {
         setDirection(newDirection);
@@ -91,6 +94,18 @@ export const StaggerTestimonials: React.FC = () => {
         return () => clearInterval(timer);
     }, [isPaused, paginate]);
 
+    const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: any) => {
+        const { offset, velocity } = info;
+        // Swipe if dragged far enough or fast enough
+        if (offset.x < -SWIPE_THRESHOLD || velocity.x < -500) {
+            paginate(1);
+        } else if (offset.x > SWIPE_THRESHOLD || velocity.x > 500) {
+            paginate(-1);
+        }
+        // Prevent click-through after drag
+        setTimeout(() => { isDragging.current = false }, 10);
+    };
+
     const t = testimonials[current];
 
     return (
@@ -100,7 +115,7 @@ export const StaggerTestimonials: React.FC = () => {
             onMouseLeave={() => setIsPaused(false)}
         >
             {/* Main testimonial card */}
-            <div className="relative min-h-[380px] md:min-h-[340px]">
+            <div className="relative min-h-[420px] sm:min-h-[380px] md:min-h-[340px] cursor-grab active:cursor-grabbing">
                 <AnimatePresence mode="wait" custom={direction}>
                     <motion.div
                         key={t.id}
@@ -109,15 +124,20 @@ export const StaggerTestimonials: React.FC = () => {
                         initial="enter"
                         animate="center"
                         exit="exit"
+                        drag="x"
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={0.3}
+                        onDragStart={() => { isDragging.current = true }}
+                        onDragEnd={handleDragEnd}
                         transition={{
                             x: { type: "spring", stiffness: 300, damping: 30 },
                             opacity: { duration: 0.3 },
                             filter: { duration: 0.3 },
                             scale: { duration: 0.3 },
                         }}
-                        className="absolute inset-0"
+                        className="absolute inset-0 touch-pan-y"
                     >
-                        <div className="bg-white/5 border border-white/10 backdrop-blur-[100px] rounded-3xl p-10 md:p-12 h-full flex flex-col justify-between">
+                        <div className="bg-white/5 border border-white/10 backdrop-blur-[100px] rounded-3xl p-6 sm:p-10 md:p-12 h-full flex flex-col justify-between select-none">
                             {/* Quote icon */}
                             <Quote className="w-8 h-8 text-white/20 mb-6 flex-shrink-0" />
 
