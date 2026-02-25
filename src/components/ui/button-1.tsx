@@ -338,8 +338,10 @@ export const SocialButton = ({
 
 export const SubmitSocialButton = ({
     label,
+    disabled,
 }: {
     label: string;
+    disabled: boolean;
 }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -350,6 +352,7 @@ export const SubmitSocialButton = ({
                 className="relative inline-block w-full h-[4em] group dark:bg-black bg-white dark:border-white/20 border-black/20 border rounded-xl cursor-pointer hover:scale-[1.02] transition-all duration-300 ease-in-out"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                disabled={disabled}
             >
                 <div className="absolute w-[112.81%] h-[128.57%] top-[8.57%] left-1/2 -translate-x-1/2 filter blur-[19px] opacity-70">
                     <span className="absolute inset-0 rounded-xl bg-[#d9d9d9] filter blur-[6.5px]"></span>
