@@ -76,6 +76,7 @@ export const StaggerTestimonials: React.FC = () => {
     const [direction, setDirection] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const isDragging = useRef(false);
+    const autoAdvanceTimeoutRef = useRef<number | null>(null);
 
     const paginate = useCallback((newDirection: number) => {
         setDirection(newDirection);
@@ -87,12 +88,28 @@ export const StaggerTestimonials: React.FC = () => {
         });
     }, []);
 
-    // Auto-advance every 6 seconds
+    const clearAutoAdvanceTimeout = useCallback(() => {
+        if (autoAdvanceTimeoutRef.current !== null) {
+            window.clearTimeout(autoAdvanceTimeoutRef.current);
+            autoAdvanceTimeoutRef.current = null;
+        }
+    }, []);
+
+    // Auto-advance 6 seconds after the current card becomes active
     useEffect(() => {
+        clearAutoAdvanceTimeout();
         if (isPaused) return;
-        const timer = setInterval(() => paginate(1), 6000);
-        return () => clearInterval(timer);
-    }, [isPaused, paginate]);
+
+        autoAdvanceTimeoutRef.current = window.setTimeout(() => {
+            paginate(1);
+        }, 6000);
+
+        return clearAutoAdvanceTimeout;
+    }, [clearAutoAdvanceTimeout, current, isPaused, paginate]);
+
+    useEffect(() => {
+        return clearAutoAdvanceTimeout;
+    }, [clearAutoAdvanceTimeout]);
 
     const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: any) => {
         const { offset, velocity } = info;

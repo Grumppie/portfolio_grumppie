@@ -46,7 +46,7 @@ export function Testimonials({ enable3D = true, enableMotion = true }: Testimoni
     const shouldMountScene = enable3D && isNearScreen
     const sectionClassName = enable3D
         ? "relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden py-20"
-        : "relative w-full flex flex-col items-center justify-center overflow-hidden py-16"
+        : "relative w-full flex flex-col items-center justify-center overflow-hidden py-8"
 
     return (
         <section ref={sectionRef} className={sectionClassName}>
@@ -77,7 +77,7 @@ export function Testimonials({ enable3D = true, enableMotion = true }: Testimoni
                 <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 text-center" style={{ fontFamily: "'Outfit', sans-serif" }}>
                     Signal Over Noise
                 </h2>
-                <p className="text-zinc-400 max-w-3xl text-center mb-10 tracking-wide text-base md:text-lg leading-relaxed">
+                <p className="text-zinc-400 max-w-3xl text-center mb-6 tracking-wide text-base md:text-lg leading-relaxed">
                     The proof is not in the pitch - it is in the people who come back. Founders, teams, and stakeholders who have seen what relentless delivery actually looks like.
                 </p>
 
