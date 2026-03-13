@@ -1,12 +1,20 @@
-import { useState, useCallback, useEffect, useRef } from "react"
+import { lazy, Suspense, type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 import { Home, Briefcase, MessageSquare, Mail } from "lucide-react"
 import { NavBar } from "./components/ui/tubelight-navbar"
 import { Hero } from "./components/Hero"
-import { Testimonials } from "./components/Testimonials"
 import { Experience } from "./components/Experience"
 import { IntroSequence } from "./components/IntroSequence"
-import { SplineTransition } from "./components/SplineTransition"
 import { Contact } from "./components/Contact"
+import { useDeviceProfile } from "./hooks/use-device-profile"
+import { useNearScreen } from "./hooks/use-near-screen"
+
+const SplineTransition = lazy(() =>
+  import("./components/SplineTransition").then((module) => ({ default: module.SplineTransition }))
+)
+
+const Testimonials = lazy(() =>
+  import("./components/Testimonials").then((module) => ({ default: module.Testimonials }))
+)
 
 const navItems = [
   { name: "Home", url: "#hero", icon: Home },
@@ -14,6 +22,29 @@ const navItems = [
   { name: "Testimonials", url: "#testimonials", icon: MessageSquare },
   { name: "Contact", url: "#contact", icon: Mail },
 ]
+
+function SectionFallback({ className }: { className: string }) {
+  return <div className={className} aria-hidden="true" />
+}
+
+function DeferredSection({
+  className,
+  rootMargin = "300px 0px",
+  children,
+}: {
+  className: string
+  rootMargin?: string
+  children: ReactNode
+}) {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const isNearScreen = useNearScreen(sectionRef, { rootMargin })
+
+  return (
+    <div ref={sectionRef} className={className}>
+      {isNearScreen ? children : <SectionFallback className="w-full h-full bg-black" />}
+    </div>
+  )
+}
 
 export default function App() {
   const [introComplete, setIntroComplete] = useState(false)
@@ -23,47 +54,62 @@ export default function App() {
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
   const glowRef = useRef<HTMLDivElement>(null)
 
-  // Keep last glow color so the fade-out uses the real gradient instead of 'none'
+  const { isMobile, canHover, prefersReducedMotion } = useDeviceProfile()
+  const enableHeroShader = !prefersReducedMotion
+  const enableHeroParallax = canHover && !prefersReducedMotion
+  const enableSection3D = !isMobile && !prefersReducedMotion
+  const enableSectionMotion = canHover && !prefersReducedMotion
+  const enableGlow = canHover && !isMobile
+
   useEffect(() => {
     if (glowColor) setLastGlow(glowColor)
   }, [glowColor])
 
-  // Force scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0)
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual'
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual"
     }
   }, [])
 
-  // Track mouse position globally (only when glow is active)
   useEffect(() => {
+    if (!enableGlow) return
+
     const onMove = (e: MouseEvent) => {
       setMousePos({
         x: (e.clientX / window.innerWidth) * 100,
         y: (e.clientY / window.innerHeight) * 100,
       })
     }
+
     if (glowColor) {
       window.addEventListener("mousemove", onMove)
     }
+
     return () => window.removeEventListener("mousemove", onMove)
-  }, [glowColor])
+  }, [enableGlow, glowColor])
+
+  useEffect(() => {
+    if (isMobile || !enableHeroShader) {
+      setShadersReady(true)
+    }
+  }, [enableHeroShader, isMobile])
 
   const onShaderReady = useCallback(() => {
     setShadersReady(true)
   }, [])
 
   const buildGlow = (layers: string[]) => {
-    return layers.map(layer => {
-      return layer.replace(/at (\d+)% (\d+)%/, (_, ox, oy) => {
-        const bx = Math.round(Number(ox) * 0.3 + mousePos.x * 0.7)
-        const by = Math.round(Number(oy) * 0.3 + mousePos.y * 0.7)
-        return `at ${bx}% ${by}%`
+    return layers
+      .map((layer) => {
+        return layer.replace(/at (\d+)% (\d+)%/, (_, ox, oy) => {
+          const bx = Math.round(Number(ox) * 0.3 + mousePos.x * 0.7)
+          const by = Math.round(Number(oy) * 0.3 + mousePos.y * 0.7)
+          return `at ${bx}% ${by}%`
+        })
       })
-    }).join(', ')
+      .join(", ")
   }
-
 
   return (
     <main className="min-h-screen text-white antialiased selection:bg-white/20 w-full relative overflow-clip">
@@ -74,29 +120,50 @@ export default function App() {
         />
       )}
 
-      {/* Tubelight Navbar — only visible after intro */}
       {introComplete && <NavBar items={navItems} />}
 
-      {/* App-wide cursor-reactive multi-color radial glow */}
-      <div
-        ref={glowRef}
-        className="fixed inset-0 z-[5] pointer-events-none"
-        style={{
-          opacity: glowColor ? 1 : 0,
-          background: buildGlow(glowColor ?? lastGlow ?? []),
-          transition: 'opacity 1s ease-in-out, background 1.2s ease-in-out',
-        }}
+      {enableGlow ? (
+        <div
+          ref={glowRef}
+          className="fixed inset-0 z-[5] pointer-events-none"
+          style={{
+            opacity: glowColor ? 1 : 0,
+            background: buildGlow(glowColor ?? lastGlow ?? []),
+            transition: "opacity 1s ease-in-out, background 1.2s ease-in-out",
+          }}
+        />
+      ) : null}
+
+      <Hero
+        introComplete={introComplete}
+        onShaderReady={onShaderReady}
+        enableShader={enableHeroShader}
+        enableParallax={enableHeroParallax}
+        lowQualityShader={isMobile}
       />
 
-      <Hero introComplete={introComplete} onShaderReady={onShaderReady} />
-      <SplineTransition />
-      <Experience onHoverGlow={setGlowColor} />
-      <Testimonials />
+      <DeferredSection className="w-full h-[100vh] md:h-[120vh]" rootMargin="400px 0px">
+        <Suspense fallback={<SectionFallback className="w-full h-full bg-black" />}>
+          <SplineTransition enable3D={enableSection3D} enableMotion={enableSectionMotion} />
+        </Suspense>
+      </DeferredSection>
+
+      <Experience
+        onHoverGlow={enableGlow ? setGlowColor : undefined}
+        enableOverlap={enableSection3D}
+      />
+
+      <DeferredSection className="w-full min-h-screen" rootMargin="400px 0px">
+        <Suspense fallback={<SectionFallback className="w-full h-full min-h-screen bg-black" />}>
+          <Testimonials enable3D={enableSection3D} enableMotion={enableSectionMotion} />
+        </Suspense>
+      </DeferredSection>
+
       <Contact />
 
       <footer className="h-32 pb-16 sm:pb-0 flex items-center justify-center bg-black border-t border-white/10">
         <p className="text-zinc-500 font-mono text-sm">SIGNAL ACTIVE // 2026</p>
       </footer>
     </main>
-  );
+  )
 }

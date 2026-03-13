@@ -68,7 +68,13 @@ const experienceData = [
     },
 ];
 
-export function Experience({ onHoverGlow }: { onHoverGlow?: (color: string[] | null) => void }) {
+export function Experience({
+    onHoverGlow,
+    enableOverlap = true,
+}: {
+    onHoverGlow?: (color: string[] | null) => void
+    enableOverlap?: boolean
+}) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     const handleEnter = (i: number) => {
@@ -81,7 +87,10 @@ export function Experience({ onHoverGlow }: { onHoverGlow?: (color: string[] | n
     };
 
     return (
-        <section id="experience" className="relative w-full min-h-screen flex flex-col items-center justify-start overflow-hidden pb-20 -mt-[50vh] pt-[15vh]">
+        <section
+            id="experience"
+            className={`relative w-full min-h-screen flex flex-col items-center justify-start overflow-hidden pb-20 ${enableOverlap ? "-mt-[50vh] pt-[15vh]" : "pt-20 md:pt-24"}`}
+        >
 
             {/* Background Layering */}
             <div className="absolute inset-0 z-0 pointer-events-none">

@@ -1,13 +1,6 @@
 import { WebGLShader } from "@/components/ui/web-gl-shader"
-import { motion, useMotionValue, useSpring, useTransform, useInView } from "framer-motion"
+import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
-
-/* ──────────────────────────────────────────────────────────
- * Hero Section
- * 
- * Single fluid shader background + content reveal animation.
- * Content reveals via opacity+blur on initial load and scroll re-entry.
- * ────────────────────────────────────────────────────────── */
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -32,8 +25,21 @@ const roleVariants = {
     visible: { opacity: 1, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
 }
 
-export function Hero({ introComplete, onShaderReady }: { introComplete: boolean; onShaderReady: () => void }) {
-    // ── Mouse tracking ──
+interface HeroProps {
+    introComplete: boolean
+    onShaderReady: () => void
+    enableShader?: boolean
+    enableParallax?: boolean
+    lowQualityShader?: boolean
+}
+
+export function Hero({
+    introComplete,
+    onShaderReady,
+    enableShader = true,
+    enableParallax = true,
+    lowQualityShader = false,
+}: HeroProps) {
     const x = useMotionValue(0)
     const y = useMotionValue(0)
     const mouseXSpring = useSpring(x, { stiffness: 100, damping: 20 })
@@ -41,7 +47,6 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
     const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"])
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"])
 
-    // ── Refs & State ──
     const sectionRef = useRef<HTMLElement>(null)
     const isInView = useInView(sectionRef, { amount: 0.4 })
     const hasPlayedInitial = useRef(false)
@@ -49,30 +54,36 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
 
     const [showShader, setShowShader] = useState(false)
     const [revealContent, setRevealContent] = useState(false)
+    const shouldMountShader = enableShader && (!introComplete || showShader)
 
-    // ── Mouse listener ──
     useEffect(() => {
+        if (!enableParallax) return
+
         const onMove = (e: MouseEvent) => {
             x.set((e.clientX - window.innerWidth / 2) / (window.innerWidth / 2))
             y.set((e.clientY - window.innerHeight / 2) / (window.innerHeight / 2))
         }
+
         window.addEventListener("mousemove", onMove)
         return () => window.removeEventListener("mousemove", onMove)
-    }, [x, y])
+    }, [enableParallax, x, y])
 
-    // ── Initial reveal after intro completes ──
     useEffect(() => {
         if (!introComplete || hasPlayedInitial.current) return
         hasPlayedInitial.current = true
 
-        setShowShader(true)
+        setShowShader(enableShader)
         const t1 = setTimeout(() => setRevealContent(true), 150)
-        const t2 = setTimeout(() => { initialRevealDone.current = true }, 1500)
+        const t2 = setTimeout(() => {
+            initialRevealDone.current = true
+        }, 1500)
 
-        return () => { clearTimeout(t1); clearTimeout(t2) }
-    }, [introComplete])
+        return () => {
+            clearTimeout(t1)
+            clearTimeout(t2)
+        }
+    }, [enableShader, introComplete])
 
-    // ── Re-trigger on scroll re-entry ──
     useEffect(() => {
         if (!initialRevealDone.current) return
 
@@ -80,38 +91,45 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
             setRevealContent(false)
             setShowShader(false)
 
-            // Brief reset then reveal
-            const t0 = setTimeout(() => setShowShader(true), 30)
+            const t0 = setTimeout(() => setShowShader(enableShader), 30)
             const t1 = setTimeout(() => setRevealContent(true), 150)
-            return () => { clearTimeout(t0); clearTimeout(t1) }
-        } else {
-            setRevealContent(false)
-            setShowShader(false)
+            return () => {
+                clearTimeout(t0)
+                clearTimeout(t1)
+            }
         }
-    }, [isInView])
+
+        setRevealContent(false)
+        setShowShader(false)
+    }, [enableShader, isInView])
 
     return (
         <section id="hero" ref={sectionRef} className="relative w-full h-[100dvh] flex items-center justify-center overflow-hidden warp-bottom">
-
-            {/* Single fluid shader background */}
-            <div className={`absolute inset-0 z-0 mix-blend-screen overflow-hidden transition-opacity duration-[1500ms] ease-out ${showShader ? 'opacity-70' : 'opacity-0'}`}>
-                <WebGLShader onReady={onShaderReady} />
+            <div className={`absolute inset-0 z-0 mix-blend-screen overflow-hidden transition-opacity duration-[1500ms] ease-out ${showShader ? "opacity-70" : "opacity-0"}`}>
+                {shouldMountShader ? (
+                    <WebGLShader
+                        onReady={onShaderReady}
+                        quality={lowQualityShader ? "low" : "high"}
+                        interactive={enableParallax}
+                    />
+                ) : null}
             </div>
 
-            {/* Vignette overlays */}
             <div className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)] pointer-events-none" />
             <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black via-transparent to-black opacity-90 pointer-events-none" />
 
-            {/* Content — 3D perspective tracking */}
             <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 pointer-events-auto w-full" style={{ perspective: "1000px" }}>
                 <motion.div
                     initial="hidden"
                     animate={revealContent ? "visible" : "hidden"}
                     variants={containerVariants}
-                    style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                    style={{
+                        rotateX: enableParallax ? rotateX : "0deg",
+                        rotateY: enableParallax ? rotateY : "0deg",
+                        transformStyle: "preserve-3d",
+                    }}
                     className="flex flex-col items-center group cursor-pointer"
                 >
-                    {/* Name */}
                     <div className="relative group/title" style={{ transform: "translateZ(50px)" }}>
                         <motion.h1
                             variants={titleVariants}
@@ -122,7 +140,6 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
                         </motion.h1>
                     </div>
 
-                    {/* Tagline */}
                     <div style={{ transform: "translateZ(30px)" }}>
                         <motion.p
                             variants={taglineVariants}
@@ -132,7 +149,6 @@ export function Hero({ introComplete, onShaderReady }: { introComplete: boolean;
                         </motion.p>
                     </div>
 
-                    {/* Role */}
                     <div style={{ transform: "translateZ(20px)" }}>
                         <motion.p
                             variants={roleVariants}

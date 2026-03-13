@@ -3,7 +3,13 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
 
-export function WebGLShader({ onReady }: { onReady?: () => void }) {
+interface WebGLShaderProps {
+    onReady?: () => void
+    quality?: "low" | "high"
+    interactive?: boolean
+}
+
+export function WebGLShader({ onReady, quality = "high", interactive = true }: WebGLShaderProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const sceneRef = useRef<{
         scene: THREE.Scene | null
@@ -32,6 +38,9 @@ export function WebGLShader({ onReady }: { onReady?: () => void }) {
 
         const canvas = canvasRef.current
         const { current: refs } = sceneRef
+        const isLowQuality = quality === "low"
+        const pixelRatioCap = isLowQuality ? 1 : 1.5
+        const frameInterval = isLowQuality ? 1000 / 30 : 1000 / 60
 
         const vertexShader = `
       attribute vec3 position;
@@ -67,8 +76,13 @@ export function WebGLShader({ onReady }: { onReady?: () => void }) {
 
         const initScene = () => {
             refs.scene = new THREE.Scene()
-            refs.renderer = new THREE.WebGLRenderer({ canvas })
-            refs.renderer.setPixelRatio(window.devicePixelRatio)
+            refs.renderer = new THREE.WebGLRenderer({
+                canvas,
+                antialias: !isLowQuality,
+                alpha: false,
+                powerPreference: isLowQuality ? "low-power" : "high-performance",
+            })
+            refs.renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatioCap))
             refs.renderer.setClearColor(new THREE.Color(0x000000))
 
             refs.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, -1)
@@ -108,9 +122,16 @@ export function WebGLShader({ onReady }: { onReady?: () => void }) {
         }
 
         let firstFrame = true
-        const animate = () => {
+        let lastFrameTime = 0
+        const animate = (now: number) => {
+            refs.animationId = requestAnimationFrame(animate)
+
+            if (document.visibilityState !== "visible") return
+            if (now - lastFrameTime < frameInterval) return
+            lastFrameTime = now
+
             if (refs.uniforms) {
-                refs.uniforms.time.value += 0.01
+                refs.uniforms.time.value += isLowQuality ? 0.008 : 0.01
 
                 // Lerp towards target parameters
                 refs.uniforms.distortion.value += (refs.targetDistortion - refs.uniforms.distortion.value) * 0.05
@@ -125,8 +146,6 @@ export function WebGLShader({ onReady }: { onReady?: () => void }) {
                 firstFrame = false
                 onReady?.()
             }
-
-            refs.animationId = requestAnimationFrame(animate)
         }
 
         const handleResize = () => {
@@ -135,6 +154,7 @@ export function WebGLShader({ onReady }: { onReady?: () => void }) {
             const parent = canvas.parentElement;
             const width = parent ? parent.clientWidth : window.innerWidth;
             const height = parent ? parent.clientHeight : window.innerHeight;
+            refs.renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatioCap))
             refs.renderer.setSize(width, height, false)
             refs.uniforms.resolution.value = [width, height]
         }
@@ -155,14 +175,18 @@ export function WebGLShader({ onReady }: { onReady?: () => void }) {
         }
 
         initScene()
-        animate()
+        refs.animationId = requestAnimationFrame(animate)
         window.addEventListener("resize", handleResize)
-        window.addEventListener("mousemove", handleMouseMove)
+        if (interactive) {
+            window.addEventListener("mousemove", handleMouseMove)
+        }
 
         return () => {
             if (refs.animationId) cancelAnimationFrame(refs.animationId)
             window.removeEventListener("resize", handleResize)
-            window.removeEventListener("mousemove", handleMouseMove)
+            if (interactive) {
+                window.removeEventListener("mousemove", handleMouseMove)
+            }
             if (refs.mesh) {
                 refs.scene?.remove(refs.mesh)
                 refs.mesh.geometry.dispose()
@@ -172,7 +196,7 @@ export function WebGLShader({ onReady }: { onReady?: () => void }) {
             }
             refs.renderer?.dispose()
         }
-    }, [])
+    }, [interactive, onReady, quality])
 
     return (
         <canvas
