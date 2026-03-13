@@ -1,6 +1,10 @@
-import { WebGLShader } from "@/components/ui/web-gl-shader"
+import { lazy, Suspense } from "react"
 import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
+
+const WebGLShader = lazy(() =>
+    import("@/components/ui/web-gl-shader").then((module) => ({ default: module.WebGLShader }))
+)
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -104,14 +108,16 @@ export function Hero({
     }, [enableShader, isInView])
 
     return (
-        <section id="hero" ref={sectionRef} className="relative w-full h-[100dvh] flex items-center justify-center overflow-hidden warp-bottom">
+        <section id="hero" ref={sectionRef} className="relative w-full h-[100dvh] flex items-center justify-center overflow-hidden">
             <div className={`absolute inset-0 z-0 mix-blend-screen overflow-hidden transition-opacity duration-[1500ms] ease-out ${showShader ? "opacity-70" : "opacity-0"}`}>
                 {shouldMountShader ? (
-                    <WebGLShader
-                        onReady={onShaderReady}
-                        quality={lowQualityShader ? "low" : "high"}
-                        interactive={enableParallax}
-                    />
+                    <Suspense fallback={null}>
+                        <WebGLShader
+                            onReady={onShaderReady}
+                            quality={lowQualityShader ? "low" : "high"}
+                            interactive={enableParallax}
+                        />
+                    </Suspense>
                 ) : null}
             </div>
 

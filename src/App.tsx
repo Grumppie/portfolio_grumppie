@@ -28,10 +28,12 @@ function SectionFallback({ className }: { className: string }) {
 }
 
 function DeferredSection({
+  id,
   className,
   rootMargin = "300px 0px",
   children,
 }: {
+  id?: string
   className: string
   rootMargin?: string
   children: ReactNode
@@ -40,7 +42,7 @@ function DeferredSection({
   const isNearScreen = useNearScreen(sectionRef, { rootMargin })
 
   return (
-    <div ref={sectionRef} className={className}>
+    <div id={id} ref={sectionRef} className={className}>
       {isNearScreen ? children : <SectionFallback className="w-full h-full bg-black" />}
     </div>
   )
@@ -55,7 +57,7 @@ export default function App() {
   const glowRef = useRef<HTMLDivElement>(null)
 
   const { isMobile, canHover, prefersReducedMotion } = useDeviceProfile()
-  const enableHeroShader = !prefersReducedMotion
+  const enableHeroShader = !isMobile && !prefersReducedMotion
   const enableHeroParallax = canHover && !prefersReducedMotion
   const enableSection3D = !isMobile && !prefersReducedMotion
   const enableSectionMotion = canHover && !prefersReducedMotion
@@ -142,7 +144,10 @@ export default function App() {
         lowQualityShader={isMobile}
       />
 
-      <DeferredSection className="w-full h-[100vh] md:h-[120vh]" rootMargin="400px 0px">
+      <DeferredSection
+        className={enableSection3D ? "w-full h-[100vh] md:h-[120vh]" : "w-full"}
+        rootMargin="400px 0px"
+      >
         <Suspense fallback={<SectionFallback className="w-full h-full bg-black" />}>
           <SplineTransition enable3D={enableSection3D} enableMotion={enableSectionMotion} />
         </Suspense>
@@ -153,7 +158,11 @@ export default function App() {
         enableOverlap={enableSection3D}
       />
 
-      <DeferredSection className="w-full min-h-screen" rootMargin="400px 0px">
+      <DeferredSection
+        id="testimonials"
+        className={enableSection3D ? "w-full min-h-screen" : "w-full"}
+        rootMargin="400px 0px"
+      >
         <Suspense fallback={<SectionFallback className="w-full h-full min-h-screen bg-black" />}>
           <Testimonials enable3D={enableSection3D} enableMotion={enableSectionMotion} />
         </Suspense>

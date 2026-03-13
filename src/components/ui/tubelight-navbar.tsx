@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, useRef } from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -18,6 +18,18 @@ interface NavBarProps {
 export function NavBar({ items, className }: NavBarProps) {
     const [activeTab, setActiveTab] = useState(items[0].name)
     const [scrolled, setScrolled] = useState(false)
+    const navLockRef = useRef(false)
+    const targetSectionRef = useRef<HTMLElement | null>(null)
+    const releaseLockTimerRef = useRef<number | null>(null)
+
+    const releaseNavLock = useCallback(() => {
+        navLockRef.current = false
+        targetSectionRef.current = null
+        if (releaseLockTimerRef.current !== null) {
+            window.clearTimeout(releaseLockTimerRef.current)
+            releaseLockTimerRef.current = null
+        }
+    }, [])
 
     // Glassmorphic morph on scroll
     useEffect(() => {
@@ -34,6 +46,16 @@ export function NavBar({ items, className }: NavBarProps) {
             const scrollY = window.scrollY
             const viewportH = window.innerHeight
             const trigger = scrollY + viewportH * 0.35 // 35% from top of viewport
+            const targetSection = targetSectionRef.current
+
+            if (navLockRef.current && targetSection) {
+                const top = targetSection.getBoundingClientRect().top
+                if (Math.abs(top) <= 24) {
+                    releaseNavLock()
+                } else {
+                    return
+                }
+            }
 
             let activeIndex = 0
             sectionIds.forEach((id, i) => {
@@ -50,16 +72,32 @@ export function NavBar({ items, className }: NavBarProps) {
         window.addEventListener("scroll", onScroll, { passive: true })
         onScroll() // initial check
         return () => window.removeEventListener("scroll", onScroll)
-    }, [items])
+    }, [items, releaseNavLock])
 
     const handleClick = useCallback((e: React.MouseEvent, item: NavItem) => {
         e.preventDefault()
         setActiveTab(item.name)
 
         // Smooth scroll to section
-        const target = document.querySelector(item.url)
+        const target = document.querySelector<HTMLElement>(item.url)
         if (target) {
+            navLockRef.current = true
+            targetSectionRef.current = target
+            if (releaseLockTimerRef.current !== null) {
+                window.clearTimeout(releaseLockTimerRef.current)
+            }
+            releaseLockTimerRef.current = window.setTimeout(() => {
+                releaseNavLock()
+            }, 1200)
             target.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+    }, [releaseNavLock])
+
+    useEffect(() => {
+        return () => {
+            if (releaseLockTimerRef.current !== null) {
+                window.clearTimeout(releaseLockTimerRef.current)
+            }
         }
     }, [])
 

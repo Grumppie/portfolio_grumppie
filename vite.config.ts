@@ -8,6 +8,28 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return
+
+          if (id.includes("@splinetool") || id.includes("three")) {
+            return "three-stack"
+          }
+
+          if (
+            id.includes("framer-motion") ||
+            id.includes("/motion/") ||
+            id.includes("lucide-react") ||
+            id.includes("@radix-ui")
+          ) {
+            return "vendor"
+          }
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

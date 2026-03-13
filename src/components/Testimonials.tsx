@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react"
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
 import { useNearScreen } from "@/hooks/use-near-screen"
 import { StaggerTestimonials } from "./ui/stagger-testimonials"
-import { WarpDivider } from "./ui/WarpDivider"
 import { SplineScene } from "./ui/spline-scene"
 
 interface TestimonialsProps {
@@ -45,9 +44,12 @@ export function Testimonials({ enable3D = true, enableMotion = true }: Testimoni
     }, [enableMotion, x, y])
 
     const shouldMountScene = enable3D && isNearScreen
+    const sectionClassName = enable3D
+        ? "relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden py-20"
+        : "relative w-full flex flex-col items-center justify-center overflow-hidden py-16"
 
     return (
-        <section id="testimonials" ref={sectionRef} className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden warp-bottom py-20">
+        <section ref={sectionRef} className={sectionClassName}>
             {shouldMountScene ? (
                 <motion.div
                     className="absolute inset-0 z-0 opacity-60 mix-blend-screen pointer-events-none"
@@ -81,8 +83,6 @@ export function Testimonials({ enable3D = true, enableMotion = true }: Testimoni
 
                 <StaggerTestimonials />
             </div>
-
-            <WarpDivider />
         </section>
     )
 }

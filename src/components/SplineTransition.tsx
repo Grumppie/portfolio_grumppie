@@ -51,11 +51,17 @@ export function SplineTransition({ enable3D = true, enableMotion = true }: Splin
     }, [enableMotion, x, y])
 
     const shouldMountScene = enable3D && isNearScreen
+    const sectionClassName = enable3D
+        ? "relative w-full h-[100vh] md:h-[120vh] flex items-center justify-center bg-black overflow-hidden"
+        : "relative w-full min-h-[34rem] flex items-center justify-center bg-black overflow-hidden py-16"
+    const contentClassName = enable3D
+        ? "relative z-10 flex flex-col items-center justify-center text-center px-4 pointer-events-none mt-[-5vh]"
+        : "relative z-10 flex flex-col items-center justify-center text-center px-6 pt-8 pb-6"
 
     return (
         <motion.section
             ref={sectionRef}
-            className="relative w-full h-[100vh] md:h-[120vh] flex items-center justify-center bg-black overflow-hidden warp-bottom"
+            className={sectionClassName}
             style={{ scaleX }}
         >
             <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none opacity-80" />
@@ -81,18 +87,20 @@ export function SplineTransition({ enable3D = true, enableMotion = true }: Splin
                 <TransitionFallback />
             )}
 
-            <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 pointer-events-none mt-[-5vh]">
+            <div className={contentClassName}>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] max-w-5xl leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
                     Precision Is the Practice
                 </h2>
-                <p className="mt-8 text-base md:text-lg text-zinc-300 font-normal tracking-[0.05em] max-w-3xl leading-relaxed" style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
+                <p className="mt-6 text-base md:text-lg text-zinc-300 font-normal tracking-[0.03em] max-w-3xl leading-relaxed" style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
                     React, Next.js, Flutter - shipping cross-platform at production scale.<br className="hidden md:block" />
                     LangGraph, LiveKit, Deepgram, Twilio - building AI that talks, reasons, and acts.<br className="hidden md:block" />
                     Every system architected for measurable outcomes. Every deadline met or beaten.
                 </p>
             </div>
 
-            <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black to-transparent pointer-events-none z-20" />
+            {enable3D ? (
+                <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black to-transparent pointer-events-none z-20" />
+            ) : null}
         </motion.section>
     )
 }

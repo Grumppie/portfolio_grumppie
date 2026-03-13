@@ -88,12 +88,6 @@
   }
 }
 
-@layer utilities {
-  .warp-bottom {
-    clip-path: ellipse(150% 100% at 50% 100%);
-  }
-}
-
 /* Hide Spline watermark */
 a[href*="spline.design"] {
   display: none !important;

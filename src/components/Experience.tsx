@@ -1,4 +1,3 @@
-import { WarpDivider } from "./ui/WarpDivider";
 import { useState } from "react";
 
 const experienceData = [
@@ -89,7 +88,7 @@ export function Experience({
     return (
         <section
             id="experience"
-            className={`relative w-full min-h-screen flex flex-col items-center justify-start overflow-hidden pb-20 ${enableOverlap ? "-mt-[50vh] pt-[15vh]" : "pt-20 md:pt-24"}`}
+            className={`relative w-full min-h-screen flex flex-col items-center justify-start overflow-hidden ${enableOverlap ? "pb-20 -mt-[50vh] pt-[15vh]" : "pb-12 pt-8 md:pb-20 md:pt-24"}`}
         >
 
             {/* Background Layering */}
@@ -99,7 +98,7 @@ export function Experience({
             </div>
 
             {/* Container */}
-            <div className="relative z-10 w-full max-w-5xl px-4 md:px-12 flex flex-col items-start mt-16">
+            <div className={`relative z-10 w-full max-w-5xl px-4 md:px-12 flex flex-col items-start ${enableOverlap ? "mt-16" : "mt-8 md:mt-16"}`}>
                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight text-white mb-10">
                     Mission Log
                 </h2>
@@ -168,9 +167,6 @@ export function Experience({
                     ))}
                 </div>
             </div>
-
-            {/* Chromatic warp divider at section bottom */}
-            <WarpDivider />
         </section>
     );
 }

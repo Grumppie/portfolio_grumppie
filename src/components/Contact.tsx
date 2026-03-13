@@ -1,4 +1,3 @@
-import { WarpDivider } from "./ui/WarpDivider";
 import { ContactCard } from "./ui/contact-card";
 import { MailIcon, Github, Twitter, Linkedin } from 'lucide-react';
 import { Input } from './ui/input';
@@ -37,9 +36,6 @@ export function Contact() {
 
     return (
         <section id="contact" className="relative w-full py-20 flex flex-col items-center justify-center bg-black overflow-hidden border-t border-white/10">
-            {/* Warp divider at top (flipped) */}
-            <WarpDivider flip />
-
             {/* Soft background glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
 
