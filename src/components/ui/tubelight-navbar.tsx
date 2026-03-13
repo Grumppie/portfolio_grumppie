@@ -20,11 +20,13 @@ export function NavBar({ items, className }: NavBarProps) {
     const [scrolled, setScrolled] = useState(false)
     const navLockRef = useRef(false)
     const targetSectionRef = useRef<HTMLElement | null>(null)
+    const targetOffsetRef = useRef(0)
     const releaseLockTimerRef = useRef<number | null>(null)
 
     const releaseNavLock = useCallback(() => {
         navLockRef.current = false
         targetSectionRef.current = null
+        targetOffsetRef.current = 0
         if (releaseLockTimerRef.current !== null) {
             window.clearTimeout(releaseLockTimerRef.current)
             releaseLockTimerRef.current = null
@@ -50,7 +52,7 @@ export function NavBar({ items, className }: NavBarProps) {
 
             if (navLockRef.current && targetSection) {
                 const top = targetSection.getBoundingClientRect().top
-                if (Math.abs(top) <= 24) {
+                if (Math.abs(top - targetOffsetRef.current) <= 24) {
                     releaseNavLock()
                 } else {
                     return
@@ -81,15 +83,27 @@ export function NavBar({ items, className }: NavBarProps) {
         // Smooth scroll to section
         const target = document.querySelector<HTMLElement>(item.url)
         if (target) {
+            const targetId = item.url.replace("#", "")
+            const isMobile = window.matchMedia("(max-width: 639px)").matches
+            const baseOffset = isMobile ? 20 : 92
+            const sectionOffset = targetId === "testimonials"
+                ? baseOffset + (isMobile ? 36 : 12)
+                : baseOffset
+            const targetTop = Math.max(
+                0,
+                window.scrollY + target.getBoundingClientRect().top - sectionOffset,
+            )
+
             navLockRef.current = true
             targetSectionRef.current = target
+            targetOffsetRef.current = sectionOffset
             if (releaseLockTimerRef.current !== null) {
                 window.clearTimeout(releaseLockTimerRef.current)
             }
             releaseLockTimerRef.current = window.setTimeout(() => {
                 releaseNavLock()
             }, 1200)
-            target.scrollIntoView({ behavior: "smooth", block: "start" })
+            window.scrollTo({ top: targetTop, behavior: "smooth" })
         }
     }, [releaseNavLock])
 

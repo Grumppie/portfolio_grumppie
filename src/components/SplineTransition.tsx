@@ -6,6 +6,7 @@ import { SplineScene } from "./ui/spline-scene"
 interface SplineTransitionProps {
     enable3D?: boolean
     enableMotion?: boolean
+    compact3D?: boolean
 }
 
 function TransitionFallback() {
@@ -18,7 +19,11 @@ function TransitionFallback() {
     )
 }
 
-export function SplineTransition({ enable3D = true, enableMotion = true }: SplineTransitionProps) {
+export function SplineTransition({
+    enable3D = true,
+    enableMotion = true,
+    compact3D = false,
+}: SplineTransitionProps) {
     const sectionRef = useRef<HTMLElement>(null)
     const isNearScreen = useNearScreen(sectionRef, { rootMargin: "300px 0px" })
 
@@ -52,10 +57,10 @@ export function SplineTransition({ enable3D = true, enableMotion = true }: Splin
 
     const shouldMountScene = enable3D && isNearScreen
     const sectionClassName = enable3D
-        ? "relative w-full h-[100vh] md:h-[120vh] flex items-center justify-center bg-black overflow-hidden"
+        ? `relative w-full ${compact3D ? "h-[72vh]" : "h-[100vh] md:h-[120vh]"} flex items-center justify-center bg-black overflow-hidden`
         : "relative w-full min-h-[18rem] flex items-center justify-center bg-black overflow-hidden py-4"
     const contentClassName = enable3D
-        ? "relative z-10 flex flex-col items-center justify-center text-center px-4 pointer-events-none mt-[-5vh]"
+        ? `relative z-10 flex flex-col items-center justify-center text-center pointer-events-none ${compact3D ? "px-6 pt-8" : "px-4 mt-[-5vh]"}`
         : "relative z-10 flex flex-col items-center justify-center text-center px-6 pt-2 pb-2"
 
     return (
@@ -74,8 +79,8 @@ export function SplineTransition({ enable3D = true, enableMotion = true }: Splin
                         rotateY: enableMotion ? rotateY : "0deg",
                         perspective: "1000px",
                         transformStyle: "preserve-3d",
-                        scale: 1.08,
-                        y: "8vh",
+                        scale: compact3D ? 1.02 : 1.08,
+                        y: compact3D ? "3vh" : "8vh",
                         transformOrigin: "center center",
                     }}
                 >
@@ -91,7 +96,7 @@ export function SplineTransition({ enable3D = true, enableMotion = true }: Splin
                 <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] max-w-5xl leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
                     Precision Is the Practice
                 </h2>
-                <p className="mt-3 text-base md:text-lg text-zinc-300 font-normal tracking-[0.03em] max-w-3xl leading-relaxed" style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
+                <p className={`text-base md:text-lg text-zinc-300 font-normal tracking-[0.03em] max-w-3xl leading-relaxed ${compact3D ? "mt-2" : "mt-3"}`} style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
                     React, Next.js, Flutter - shipping cross-platform at production scale.<br className="hidden md:block" />
                     LangGraph, LiveKit, Deepgram, Twilio - building AI that talks, reasons, and acts.<br className="hidden md:block" />
                     Every system architected for measurable outcomes. Every deadline met or beaten.

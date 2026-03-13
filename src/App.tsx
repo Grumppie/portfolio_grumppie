@@ -57,9 +57,10 @@ export default function App() {
   const glowRef = useRef<HTMLDivElement>(null)
 
   const { isMobile, canHover, prefersReducedMotion } = useDeviceProfile()
-  const enableHeroShader = !isMobile && !prefersReducedMotion
+  const enableHeroShader = !prefersReducedMotion
   const enableHeroParallax = canHover && !prefersReducedMotion
-  const enableSection3D = !isMobile && !prefersReducedMotion
+  const enableTransition3D = !isMobile && !prefersReducedMotion
+  const enableTestimonials3D = !isMobile && !prefersReducedMotion
   const enableSectionMotion = canHover && !prefersReducedMotion
   const enableGlow = canHover && !isMobile
 
@@ -145,26 +146,30 @@ export default function App() {
       />
 
       <DeferredSection
-        className={enableSection3D ? "w-full h-[100vh] md:h-[120vh]" : "w-full"}
+        className={enableTransition3D ? "w-full h-[72vh] sm:h-[100vh] md:h-[120vh]" : "w-full"}
         rootMargin="400px 0px"
       >
         <Suspense fallback={<SectionFallback className="w-full h-full bg-black" />}>
-          <SplineTransition enable3D={enableSection3D} enableMotion={enableSectionMotion} />
+          <SplineTransition
+            enable3D={enableTransition3D}
+            enableMotion={enableSectionMotion}
+            compact3D={isMobile}
+          />
         </Suspense>
       </DeferredSection>
 
       <Experience
         onHoverGlow={enableGlow ? setGlowColor : undefined}
-        enableOverlap={enableSection3D}
+        enableOverlap={enableTransition3D && !isMobile}
       />
 
       <DeferredSection
         id="testimonials"
-        className={enableSection3D ? "w-full min-h-screen" : "w-full"}
+        className={enableTestimonials3D ? "w-full min-h-screen" : "w-full"}
         rootMargin="400px 0px"
       >
         <Suspense fallback={<SectionFallback className="w-full h-full min-h-screen bg-black" />}>
-          <Testimonials enable3D={enableSection3D} enableMotion={enableSectionMotion} />
+          <Testimonials enable3D={enableTestimonials3D} enableMotion={enableSectionMotion} />
         </Suspense>
       </DeferredSection>
 

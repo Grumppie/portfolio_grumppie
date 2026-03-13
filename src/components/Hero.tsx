@@ -59,6 +59,7 @@ export function Hero({
     const [showShader, setShowShader] = useState(false)
     const [revealContent, setRevealContent] = useState(false)
     const shouldMountShader = enableShader && (!introComplete || showShader)
+    const showNeonFallback = !enableShader
 
     useEffect(() => {
         if (!enableParallax) return
@@ -109,6 +110,19 @@ export function Hero({
 
     return (
         <section id="hero" ref={sectionRef} className="relative w-full h-[100dvh] flex items-center justify-center overflow-hidden">
+            {showNeonFallback ? (
+                <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(45,212,255,0.34),transparent_24%),radial-gradient(circle_at_82%_16%,rgba(255,64,129,0.28),transparent_22%),radial-gradient(circle_at_50%_68%,rgba(72,114,255,0.22),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_34%,rgba(0,0,0,0.72)_100%)]" />
+                    <div className="absolute left-[-16%] top-[13%] h-24 w-[132%] rotate-[14deg] rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.92),rgba(255,255,255,0.02))] blur-xl opacity-90" />
+                    <div className="absolute right-[-12%] top-[28%] h-20 w-[80%] -rotate-[18deg] rounded-full bg-[linear-gradient(90deg,rgba(34,211,238,0.02),rgba(34,211,238,0.55),rgba(217,70,239,0.08))] blur-2xl opacity-80" />
+                    <div className="absolute inset-x-[8%] top-[17%] h-32 rounded-full border border-cyan-300/25 bg-cyan-300/[0.08] blur-3xl" />
+                    <div className="absolute left-[5%] top-[22%] h-40 w-40 rounded-full bg-cyan-400/18 blur-[96px]" />
+                    <div className="absolute left-[6%] bottom-[20%] h-48 w-48 rounded-full bg-sky-500/20 blur-[110px]" />
+                    <div className="absolute right-[2%] bottom-[16%] h-52 w-52 rounded-full bg-fuchsia-500/18 blur-[120px]" />
+                    <div className="absolute inset-x-0 bottom-0 h-[44%] bg-gradient-to-t from-black via-black/55 to-transparent" />
+                </div>
+            ) : null}
+
             <div className={`absolute inset-0 z-0 mix-blend-screen overflow-hidden transition-opacity duration-[1500ms] ease-out ${showShader ? "opacity-70" : "opacity-0"}`}>
                 {shouldMountShader ? (
                     <Suspense fallback={null}>
@@ -121,8 +135,18 @@ export function Hero({
                 ) : null}
             </div>
 
-            <div className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)] pointer-events-none" />
-            <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black via-transparent to-black opacity-90 pointer-events-none" />
+            <div
+                className={`absolute inset-0 z-[2] pointer-events-none ${
+                    showNeonFallback
+                        ? "bg-[radial-gradient(circle_at_center,transparent_8%,rgba(0,0,0,0.62)_100%)]"
+                        : "bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]"
+                }`}
+            />
+            <div
+                className={`absolute inset-0 z-[2] bg-gradient-to-t from-black via-transparent to-black pointer-events-none ${
+                    showNeonFallback ? "opacity-70" : "opacity-90"
+                }`}
+            />
 
             <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 pointer-events-auto w-full" style={{ perspective: "1000px" }}>
                 <motion.div
