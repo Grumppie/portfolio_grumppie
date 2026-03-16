@@ -147,7 +147,7 @@ export default function App() {
 
       <DeferredSection
         className={enableTransition3D ? "w-full h-[72vh] sm:h-[100vh] md:h-[120vh]" : "w-full"}
-        rootMargin="400px 0px"
+        rootMargin="1100px 0px"
       >
         <Suspense fallback={<SectionFallback className="w-full h-full bg-black" />}>
           <SplineTransition

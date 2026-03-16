@@ -55,9 +55,11 @@ export function ContactCard({
                     <h1 className="text-3xl font-bold md:text-4xl lg:text-5xl text-white tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         {title}
                     </h1>
-                    <p className="text-zinc-400 max-w-xl text-sm md:text-base lg:text-lg font-light leading-relaxed">
-                        {description}
-                    </p>
+                    {description ? (
+                        <p className="text-zinc-400 max-w-xl text-sm md:text-base lg:text-lg font-light leading-relaxed">
+                            {description}
+                        </p>
+                    ) : null}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-8 sm:mt-12 w-full max-w-lg">
                         {socialLinks?.map((link, index) => {
                             const Icon = link.icon;

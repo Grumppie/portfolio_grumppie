@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNearScreen } from "@/hooks/use-near-screen"
 import { SplineScene } from "./ui/spline-scene"
 
@@ -25,7 +25,8 @@ export function SplineTransition({
     compact3D = false,
 }: SplineTransitionProps) {
     const sectionRef = useRef<HTMLElement>(null)
-    const isNearScreen = useNearScreen(sectionRef, { rootMargin: "300px 0px" })
+    const isNearScreen = useNearScreen(sectionRef, { rootMargin: "900px 0px" })
+    const [sceneLoaded, setSceneLoaded] = useState(false)
 
     const { scrollYProgress } = useScroll({
         target: sectionRef,
@@ -55,7 +56,24 @@ export function SplineTransition({
         return () => window.removeEventListener("mousemove", handleMouseMove)
     }, [enableMotion, x, y])
 
+    useEffect(() => {
+        if (!enable3D) {
+            setSceneLoaded(true)
+        }
+    }, [enable3D])
+
     const shouldMountScene = enable3D && isNearScreen
+
+    useEffect(() => {
+        if (!shouldMountScene || sceneLoaded) return
+
+        const fallbackTimer = window.setTimeout(() => {
+            setSceneLoaded(true)
+        }, 4500)
+
+        return () => window.clearTimeout(fallbackTimer)
+    }, [sceneLoaded, shouldMountScene])
+
     const sectionClassName = enable3D
         ? `relative w-full ${compact3D ? "h-[72vh]" : "h-[100vh] md:h-[120vh]"} flex items-center justify-center bg-black overflow-hidden`
         : "relative w-full min-h-[18rem] flex items-center justify-center bg-black overflow-hidden py-4"
@@ -71,9 +89,13 @@ export function SplineTransition({
         >
             <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none opacity-80" />
 
+            {!sceneLoaded || !shouldMountScene ? (
+                <TransitionFallback />
+            ) : null}
+
             {shouldMountScene ? (
                 <motion.div
-                    className="absolute inset-0 z-0 opacity-80 mix-blend-screen"
+                    className={`absolute inset-0 z-0 mix-blend-screen transition-opacity duration-700 ${sceneLoaded ? "opacity-80" : "opacity-0"}`}
                     style={{
                         rotateX: enableMotion ? rotateX : "0deg",
                         rotateY: enableMotion ? rotateY : "0deg",
@@ -85,22 +107,25 @@ export function SplineTransition({
                     }}
                 >
                     <div className="w-full h-full pointer-events-none">
-                        <SplineScene scene="https://prod.spline.design/KqcUpM7WQmII8YsG/scene.splinecode" />
+                        <SplineScene
+                            scene="https://prod.spline.design/KqcUpM7WQmII8YsG/scene.splinecode"
+                            onLoad={() => setSceneLoaded(true)}
+                        />
                     </div>
                 </motion.div>
-            ) : (
-                <TransitionFallback />
-            )}
+            ) : null}
 
             <div className={contentClassName}>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] max-w-5xl leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                    Precision Is the Practice
-                </h2>
-                <p className={`text-base md:text-lg text-zinc-300 font-normal tracking-[0.03em] max-w-3xl leading-relaxed ${compact3D ? "mt-2" : "mt-3"}`} style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
-                    React, Next.js, Flutter - shipping cross-platform at production scale.<br className="hidden md:block" />
-                    LangGraph, LiveKit, Deepgram, Twilio - building AI that talks, reasons, and acts.<br className="hidden md:block" />
-                    Every system architected for measurable outcomes. Every deadline met or beaten.
-                </p>
+                <div className="max-w-5xl rounded-[2rem] border border-white/10 bg-black/20 px-6 py-5 backdrop-blur-sm shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:px-8">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] max-w-5xl leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                        Precision Is the Practice
+                    </h2>
+                    <p className={`text-base md:text-lg text-zinc-200 font-normal tracking-[0.03em] max-w-3xl leading-relaxed ${compact3D ? "mt-2" : "mt-3"}`} style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
+                        React, Next.js, Flutter - shipping cross-platform at production scale.<br className="hidden md:block" />
+                        LangGraph, LiveKit, Deepgram, Twilio - building AI that talks, reasons, and acts.<br className="hidden md:block" />
+                        Every system architected for measurable outcomes. Every deadline met or beaten.
+                    </p>
+                </div>
             </div>
 
             {enable3D ? (

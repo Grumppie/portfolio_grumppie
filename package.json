@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "video:studio": "remotion studio src/remotion/index.ts",
+    "video:render": "remotion render src/remotion/index.ts PortfolioShowcaseVertical renders/portfolio-showcase-vertical.mp4",
+    "video:render:square": "remotion render src/remotion/index.ts PortfolioShowcaseSquare renders/portfolio-showcase-square.mp4"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",
@@ -24,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@remotion/cli": "^4.0.435",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^24.10.13",
     "@types/react": "^19.2.7",
@@ -38,6 +42,7 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "postcss": "^8.5.3",
+    "remotion": "^4.0.435",
     "tailwindcss": "^4.0.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
