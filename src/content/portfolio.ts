@@ -22,11 +22,11 @@ export type PortfolioTestimonial = {
 
 export const profile = {
   name: "Sarthak Pawar",
-  tagline: "I don't ship promises. I ship AI Agents and Software Products.",
-  roleLine: "Software Engineer // AI Engineer // India",
+  tagline: "I don't ship promises. I ship products.",
+  roleLine: "Software Engineer // AI Engineer",
   contactHeading: "Begin Transmission",
   contactBody:
-    "Scaling a product, solving a hard technical problem, or need a Software Engineer and AI Engineer from India who shows up every day with the same intensity? Specializing in Artificial Intelligence, Voice Agents, React Next, and Flutter - let's build.",
+    "Scaling a product, solving a hard technical problem, or need an Software engineer from India who shows up every day with the same intensity? Specializing in Artificial Intelligence, Voice Agents, React Next, and Flutter - let's build.",
   contactEmail: "sarthakrajesh777@gmail.com",
 }
 
