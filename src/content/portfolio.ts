@@ -27,7 +27,7 @@ export const profile = {
   contactHeading: "Begin Transmission",
   contactBody:
     "Scaling a product, solving a hard technical problem, or need an Software engineer from India who shows up every day with the same intensity? Specializing in Artificial Intelligence, Voice Agents, React Next, and Flutter - let's build.",
-  contactEmail: "sarthakrajesh777@gmail.com",
+  contactEmail: "contact@sarthakpawar.in",
 }
 
 export const experienceEntries: PortfolioExperience[] = [
